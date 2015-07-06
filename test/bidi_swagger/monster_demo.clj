@@ -6,7 +6,7 @@
             [ring.middleware.json :refer [wrap-json-response wrap-json-body]]
             [ring.middleware.resource :as resource]))
 
-;;
+;;Basic CRUD operations
 (def monster-store (atom {}))
 (def mon-count (atom 0))
 
@@ -34,17 +34,18 @@
    :produces ["application/json"]})
 
 (def monster-create-docs
-  {:summary "Create a monster"
+  {:summary  "Create a monster"
    :consumes ["application/json"]})
 
 (def monster-delete-docs
   {:summary "Delete a monster"})
 
 (def monster-list-params
-  [{:name      "eyes"
-    :type      "integer"
-    :paramType "query"
-    :required  false}])
+  [{:name        "eyes"
+    :description "not implemented"
+    :type        "integer"
+    :paramType   "query"
+    :required    false}])
 
 (def monster-list-docs
   {:summary    "List monsters"
@@ -56,15 +57,16 @@
    :delete-mon monster-delete-docs
    :create-mon monster-create-docs})
 
+;; Bidi Routes
 (def api-routes
-  ["/" {:get    {"monsters" {""        :mon-list
-                             ["/" :id] :get-mon}
-                 "docs"     :docs}
-        :post   {"monsters" :create-mon}
-        :delete {["monsters/" :id] :delete-mon}}])
-
+  ["/" {:get       {"monsters" {""        :mon-list
+                                ["/" :id] :get-mon}}
+        :post      {"monsters" :create-mon}
+        :delete    {["monsters/" :id] :delete-mon}
+        "api/docs" {:get :docs}}])
 
 (defn docs-handler
+  "Handler that creates the swagger API docs on demand."
   [req]
   {:body {:apiVersion     "0.1.0"
           :swaggerVersion "1.2"
@@ -74,6 +76,8 @@
           :basePath       "/"
           :apis           (swag-routes api-routes docs)}})
 
+; You don't have to represent the handlers with keywords, but it is convenient to do so,
+; and to provide a docs map (see above) with additional documentation for each handler.
 (def handlers
   {:mon-list   monster-list
    :get-mon    get-monster
@@ -92,11 +96,12 @@
       (resource/wrap-resource "swagger-ui")))
 
 (defn init
+  "Populate the monster store."
   []
   (swap! monster-store assoc
          (str (swap! mon-count inc)) {:name "cyclops"
                                       :eyes 1
                                       :legs 2}
-         (str (swap! mon-count inc)) {:name "aaarrrg"
+         (str (swap! mon-count inc)) {:name "aaarrrgh"
                                       :eyes 99999
                                       :legs 2}))

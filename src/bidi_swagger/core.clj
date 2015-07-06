@@ -6,6 +6,7 @@
     [ring.middleware.params :refer [wrap-params]]))
 
 (defn swag-path-param
+  "Create swagger info for a path parameter."
   [param]
   {:name      (name param)
    :paramType "path"
@@ -13,12 +14,14 @@
    :required  true})
 
 (defn param-to-string
+  "Convert a keyword parameter to swagger parameter string."
   [param]
   (if (keyword? param)
     (str "{" (name param) "}")
     param))
 
 (defprotocol PathElement
+  "Bidi path elements define the path and request properties of a route."
   (match-p [_]))
 
 (extend-protocol PathElement
@@ -35,7 +38,10 @@
     {:path        (map param-to-string segmented)
      :path-params (map swag-path-param (filter keyword? segmented))}))
 
+;TODO handle more complex guards than just method type
+
 (defn swag-path
+  "Find the swagger URL path and request methods for a route"
   [path]
   (let [elements (apply merge-with (comp vec flatten vector) (map match-p path))]
     {:path       (apply str (:path elements))
@@ -44,6 +50,8 @@
                     :parameters (or (:path-params elements) [])})}))
 
 (defn swag-docs
+  "Create base swagger info for a route. Docs-fn should take a handler id and return
+  some swagger docs info to be merged into the swagger path definition. "
   [route docs docs-fn]
   (let [path (swag-path (:path route))
         docs (docs-fn (:handler route) docs)]
@@ -60,6 +68,9 @@
                  :operations (second d)}))
 
 (defn swag-routes
+  "Takes a set of bidi routes and additional documentation and returns swagger API documenttation.
+  Docs-fn should be a function (fn [handler docs]) that returns appropriate documentation for a
+  handler id. The default implementation is (get docs handler)."
   ([routes docs docs-fn]
    (let [docs (map #(swag-docs % docs docs-fn) (route-seq routes))]
      (-> docs merge-paths swaggup)))
