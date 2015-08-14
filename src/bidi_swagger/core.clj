@@ -36,7 +36,11 @@
   clojure.lang.APersistentVector
   (match-p [segmented]
     {:path        (map param-to-string segmented)
-     :path-params (map swag-path-param (filter keyword? segmented))}))
+     :path-params (map swag-path-param (filter keyword? segmented))})
+
+  java.util.regex.Pattern
+  (match-p [this]
+    {:path (str this)}))
 
 ;TODO handle more complex guards than just method type
 
