@@ -1,14 +1,16 @@
 # bidi-swagger
 
-A Clojure library designed to ... well, that part is up to you.
+A small Clojure library for creating swagger docs from bidi routes.
+
+Bidi's routes as data approach.
 
 ## Usage
 
-FIXME
+
 
 ## License
 
-Copyright © 2015 FIXME
+Copyright © 2015 Edward Kimber
 
 Distributed under the Eclipse Public License either version 1.0 or (at
 your option) any later version.
