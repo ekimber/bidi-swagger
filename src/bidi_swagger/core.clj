@@ -58,9 +58,10 @@
   some swagger docs info to be merged into the swagger path definition. "
   [route docs docs-fn]
   (let [path (swag-path (:path route))
-        docs (docs-fn (:handler route) docs)]
+        docs (docs-fn docs (:handler route))]
+    (println docs " - " (:operations path))
     {(:path path)
-     (map #(merge % docs) (:operations path))}))
+     (map #(merge-with concat % docs) (:operations path))}))
 
 (defn merge-paths
   [docs]
@@ -73,13 +74,13 @@
 
 (defn swag-routes
   "Takes a set of bidi routes and additional documentation and returns swagger API documenttation.
-  Docs-fn should be a function (fn [handler docs]) that returns appropriate documentation for a
+  Docs-fn should be a function (fn [docs handler]) that returns appropriate documentation for a
   handler id. The default implementation is (get docs handler)."
   ([routes docs docs-fn]
    (let [docs (map #(swag-docs % docs docs-fn) (route-seq routes))]
      (-> docs merge-paths swaggup)))
   ([routes docs]
-   (swag-routes routes docs (fn [handler docs] (get docs handler)))))
+   (swag-routes routes docs get)))
 
 
 
