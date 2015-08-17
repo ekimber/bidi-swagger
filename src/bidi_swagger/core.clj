@@ -59,7 +59,6 @@
   [route docs docs-fn]
   (let [path (swag-path (:path route))
         docs (docs-fn docs (:handler route))]
-    (println docs " - " (:operations path))
     {(:path path)
      (map #(merge-with concat % docs) (:operations path))}))
 
