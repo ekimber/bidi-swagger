@@ -51,11 +51,13 @@
 (defn swag-path
   "Find the swagger URL path and request methods for a route"
   [path]
-  (let [elements (apply merge-with (comp vec flatten vector) (map match-p path))]
-    {:path       (apply str (:path elements))
+  (let [elements (apply merge-with (comp vec flatten vector) (map match-p path))
+        path-name (apply str (:path elements))]
+    {:path       path-name
      :operations (for [method (:methods elements)]
                    {:method     method
-                    :parameters (or (:path-params elements) [])})}))
+                    :parameters (or (:path-params elements) [])
+                    :nickname   (str path-name "-" method)})}))
 
 (defn swag-docs
   "Create base swagger info for a route. Docs-fn should take a handler id and return
