@@ -40,7 +40,11 @@
 
   java.util.regex.Pattern
   (match-p [this]
-    {:path (str this)}))
+    {:path (str this)})
+
+  Boolean
+  (match-p [this]
+    {:path (if this "*" "")}))
 
 ;TODO handle more complex guards than just method type
 

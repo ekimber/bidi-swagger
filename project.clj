@@ -1,4 +1,4 @@
-(defproject bidi-swagger "0.1.1"
+(defproject bidi-swagger "0.1.2"
   :description "A small Clojure library for creating swagger docs from bidi routes."
   :url "https://github.com/ekimber/bidi-swagger"
   :license {:name "Eclipse Public License"
